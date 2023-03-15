@@ -1,9 +1,3 @@
-using KVNO.TFS.Server.Controllers;
-using KVNO.TFS.Server.DL;
-using Microsoft.AspNetCore.ResponseCompression;
-using Newtonsoft.Json.Linq;
-using System.Net.Http.Headers;
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,9 +5,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
-builder.Services.AddScoped<CollectionLogic>();
-builder.Services.AddScoped<ProjectLogic>();
-builder.Services.AddScoped<WorkItemLogic>();
+builder.Services.AddScoped<ICollectionLogic, CollectionLogic>();
+builder.Services.AddScoped<IProjectLogic, ProjectLogic>();
+builder.Services.AddScoped<IWorkItemLogic, WorkItemLogic>();
+
 builder.Services.AddScoped<CollectionController>();
 builder.Services.AddScoped<ProjectController>();
 builder.Services.AddScoped<WorkItemController>();
@@ -21,10 +16,12 @@ builder.Services.AddScoped<WorkItemController>();
 
 builder.Services.AddHttpClient("default", c =>
 {
-    c.BaseAddress = new Uri(builder.Configuration["Url"]);
+    c.BaseAddress = new Uri(builder.Configuration["TFS:Url"]);
     c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     c.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(string.Format("{0}:{1}", "", builder.Configuration["TFS:Token"]))));
 });
+
+builder.Services.AddDbContext<DevOpsDbContext>(option => option.UseSqlServer(builder.Configuration["TFS:DB"]));
 
 var app = builder.Build();
 

@@ -1,4 +1,9 @@
 ﻿@page "/"
+@using KVNO.TFS.Client.Services;
+@using KVNO.TFS.Shared.Models;
+@inject CollectionService cs;
+@inject ProjectService ps;
+@inject WorkItemService ws;
 
 <PageTitle>Index</PageTitle>
 
@@ -6,4 +11,55 @@
 
 Welcome to your new app.
 
+@if(Collections is not null)
+{
+    foreach (var col in Collections)
+    {
+        <p>@col.Name</p>
+    }
+}
+
+@if(Projects is not null && WorkItems is not null)
+{
+    foreach (var p in Projects)
+    {
+        <p>Project: @p.Name - Tasks: @WorkItems.Where(x => x.ProjectId.Equals(p.Id)).ToList().Count</p>
+    }    
+}
+
 <SurveyPrompt Title="How is Blazor working for you?" />
+
+@code
+{
+    public DevOpsCollection[] Collections { get; set; }
+    public DevOpsProject[] Projects { get; set; }
+    public DevOpsWorkItem[] WorkItems { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var collections = await cs.GetCollections();
+        if(collections is not null)
+        {
+            List<DevOpsProject> projects = new();
+            List<DevOpsWorkItem> workItems = new();
+            foreach (var col in collections)
+            {
+                var pjs = await ps.GetProjects(col.Name, col.Id);
+                if(pjs is not null)
+                {
+                    foreach (var p in pjs)
+                    {
+                        var witems = await ws.GetWorkItems(col.Name, p.Name, p.Id, "Task");
+                        if (witems is not null)
+                            workItems.AddRange(witems);
+                    }
+                    projects.AddRange(pjs);
+                }
+            }
+
+            Collections = collections;
+            Projects = projects.ToArray();
+            WorkItems = workItems.ToArray();
+        }
+    }
+}

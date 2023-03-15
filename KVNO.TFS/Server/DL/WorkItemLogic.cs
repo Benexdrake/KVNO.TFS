@@ -1,108 +1,162 @@
-﻿using KVNO.TFS.Server.Data;
-using KVNO.TFS.Server.TFSModels.WorkItemsID;
-using KVNO.TFS.Shared.Models;
-using Microsoft.Extensions.Primitives;
-using Newtonsoft.Json;
-using System;
-using System.Reflection;
-using System.Xml.Linq;
+﻿namespace KVNO.TFS.Server.DL;
 
-namespace KVNO.TFS.Server.DL
+public class WorkItemLogic : IWorkItemLogic
 {
-    public class WorkItemLogic
+    private readonly HttpClient _http;
+    private readonly IConfiguration _conf;
+    private readonly ILogger<CollectionLogic> _logger;
+    private readonly DevOpsDbContext _context;
+
+    public WorkItemLogic(IHttpClientFactory clientFactory, IConfiguration conf, ILogger<CollectionLogic> logger, DevOpsDbContext context)
     {
-        private readonly HttpClient _http;
-        private readonly IConfiguration _conf;
-        private readonly ILogger<CollectionLogic> _logger;
-        private readonly DevOpsDbContext _context;
+        _http = clientFactory.CreateClient("default");
+        _conf = conf;
+        _logger = logger;
+        _context = context;
+    }
 
-        public WorkItemLogic(IHttpClientFactory clientFactory, IConfiguration conf, ILogger<CollectionLogic> logger)
-        {
-            _http = clientFactory.CreateClient("default");
-            _conf = conf;
-            _logger = logger;
-        }
-
-        public async Task<DevOpsWorkItem[]?> GetWorkitemsAsync(string collectionName, string projectName ,string projectId, string workItem)
+    /// <summary>
+    /// Get all Workitems, like Task or Bug
+    /// </summary>
+    /// <param name="collectionName"></param>
+    /// <param name="projectName"></param>
+    /// <param name="projectId"></param>
+    /// <param name="workItem"></param>
+    /// <returns></returns>
+    public async Task GetWorkitemsAsync(string collectionName, string projectName, string projectId, string workItem)
+    {
+        try
         {
             var url = $"{collectionName}/{projectId}";
             var ids = await GetWorkItemIDs(projectName, workItem, url + "/_apis/wit/wiql?api-version=5.1");
-            if(ids is not null)
+            if (ids is not null)
             {
                 foreach (var id in ids)
                 {
-                    var task = await GetWorkItemAsync(url + $"/_apis/wit/workItems/{id}", projectId);
-                }
+                    var wDb = _context.WorkItems.FirstOrDefault(x => x.Id.Equals($"{projectId}-{id}"));
+                    if(wDb is not null)
+                        if (wDb.State.Equals("Closed") || wDb.LastChange.Year < DateTime.Now.Year)
+                            continue;
+                    var task = await GetWorkItemAsync(collectionName, projectId, id);
+                    if (task is not null)
+                    {
+                        await CreateOrUpdate(task);
+                    }
+                }   
             }
-            return null;
         }
-
-        public async Task<DevOpsWorkItem?> GetWorkItemAsync(string url, string projectId)
+        catch (Exception err)
         {
-            var response = await _http.GetFromJsonAsync<TFSModels.WorkItem.Rootobject>(url);
-            if(response is not null)
+            _logger.LogError(err.Message, err);
+        }
+    }
+
+    private async Task<DevOpsWorkItem?> GetWorkItemAsync(string collectionName, string projectId, int id)
+    {
+        try
+        {
+            string url = $"{collectionName}/{projectId}/_apis/wit/workItems/{id}";
+            var response = await _http.GetAsync(url);
+            if (response.IsSuccessStatusCode)
             {
-                return await WorkitemTransform(response, projectId);
-            }
-            return null;
-        }
+                var result = await response.Content.ReadAsStringAsync();
+                result = result
+                            .Replace("System.", "System")
+                            .Replace("Microsoft.VSTS.Common.", "MicrosoftVSTSCommon")
+                            .Replace("Microsoft.VSTS.Scheduling.", "MicrosoftVSTSScheduling");
+                var root = JsonConvert.DeserializeObject<TFSModels.WorkItem.Rootobject>(result);
 
-        private async Task<int[]?> GetWorkItemIDs(string projectName, string workItem, string url)
+                return await WorkitemTransform(root, projectId);
+            }
+        }
+        catch (Exception err)
         {
-            string query = $"Select [System.Id], [System.Title], [System.State] From WorkItems " +
-                                                                                           $"Where [System.WorkItemType] = '{workItem}' AND [System.TeamProject] = '{projectName}' order by [Microsoft.VSTS.Common.Priority] " +
-                                                                                           $"asc, [System.CreatedDate] desc";
+            _logger.LogError(err.Message, err);
+        }
+        return null;
+    }
+
+    private async Task<int[]?> GetWorkItemIDs(string projectName, string workItem, string url)
+    {
+        try
+        {
+            string query = $"Select * From WorkItems " +
+                                   $"Where [System.WorkItemType] = 'Task' AND [System.TeamProject] = '{projectName}' order by [Microsoft.VSTS.Common.Priority] " +
+                                   $"asc, [System.CreatedDate] desc";
 
             var response = await _http.PostAsJsonAsync(url, new { query });
-            if(response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 List<int> ids = new List<int>();
                 string responseBody = await response.Content.ReadAsStringAsync();
-                responseBody = responseBody
-                .Replace("System.", "System")
-                .Replace("Microsoft.VSTS.Common.", "MicrosoftVSTSCommon")
-                .Replace("Microsoft.VSTS.Scheduling.", "MicrosoftVSTSScheduling");
                 var ts = JsonConvert.DeserializeObject<TFSModels.WorkItemsID.Rootobject>(responseBody);
-                foreach(var id in ts.workItems) 
+                foreach (var id in ts.workItems)
                 {
                     ids.Add(id.id);
                 }
                 return ids.ToArray();
             }
-            return null;
         }
-
-        private async Task<DevOpsWorkItem?> WorkitemTransform(TFSModels.WorkItem.Rootobject root, string projectId)
+        catch (Exception err)
         {
-            DevOpsWorkItem? at = new();
-            at.Id = $"{projectId}-{root.id}";
-            if (!string.IsNullOrEmpty(root.fields.SystemTitle))
-                at.Title = root.fields.SystemTitle;
-            at.Url = root.url;
-            if (!string.IsNullOrEmpty(root.fields.SystemTeamProject))
-                at.ProjectTitle = root.fields.SystemTeamProject;
-            if (!string.IsNullOrEmpty(root.fields.SystemWorkItemType))
-                at.Type = root.fields.SystemWorkItemType;
-            if (!string.IsNullOrEmpty(root.fields.SystemState))
-                at.State = root.fields.SystemState;
-            if (!string.IsNullOrEmpty(root.fields.SystemReason))
-                at.Reason = root.fields.SystemReason;
-            if (!string.IsNullOrEmpty(root.fields.SystemAssignedTo?.displayName))
-                at.AssignetUser = root.fields.SystemAssignedTo?.displayName;
-            if (!string.IsNullOrEmpty(root.fields.SystemAssignedTo?.imageUrl))
-                at.AssignetUserAvatar = root.fields.SystemAssignedTo?.imageUrl;
-            if (!string.IsNullOrEmpty(root.fields.SystemCreatedDate))
-                at.Created = DateTime.Parse(root.fields.SystemCreatedDate);
-            if (!string.IsNullOrEmpty(root.fields.SystemChangedDate))
-                at.LastChange = DateTime.Parse(root.fields.SystemChangedDate);
-            if (!string.IsNullOrEmpty(root.fields.MicrosoftVSTSCommonActivatedDate))
-                at.Activated = DateTime.Parse(root.fields.MicrosoftVSTSCommonActivatedDate);
-            at.Priority = root.fields.MicrosoftVSTSCommonPriority;
-            at.RemainingTime = root.fields.MicrosoftVSTSSchedulingRemainingWork;
-            at.EstimateTime = root.fields.MicrosoftVSTSSchedulingOriginalEstimate;
-            at.CompletedTime = root.fields.MicrosoftVSTSSchedulingCompletedWork;
+            _logger.LogError(err.Message, err);
+        }
+        return null;
+    }
 
-            return at;
+    private async Task<DevOpsWorkItem?> WorkitemTransform(TFSModels.WorkItem.Rootobject root, string projectId)
+    {
+        DevOpsWorkItem? workitem = new();
+        workitem.Id = $"{projectId}-{root.id}";
+        if (!string.IsNullOrEmpty(root.fields.SystemTitle))
+            workitem.Title = root.fields.SystemTitle;
+        if (!string.IsNullOrEmpty(root.fields.SystemAssignedTo?.displayName))
+            workitem.AssignetUser = root.fields.SystemAssignedTo?.displayName;
+        workitem.State = root.fields.SystemState;
+        workitem.Reason = root.fields.SystemReason;
+        workitem.Type = root.fields.SystemWorkItemType;
+        if (!string.IsNullOrEmpty(root.fields.SystemCreatedDate))
+            workitem.Created = DateTime.Parse(root.fields.SystemCreatedDate);
+        if (!string.IsNullOrEmpty(root.fields.SystemChangedDate))
+            workitem.LastChange = DateTime.Parse(root.fields.SystemChangedDate);
+        if (!string.IsNullOrEmpty(root.fields.MicrosoftVSTSCommonActivatedDate))
+            workitem.Activated = DateTime.Parse(root.fields.MicrosoftVSTSCommonActivatedDate);
+        workitem.RemainingTime = root.fields.MicrosoftVSTSSchedulingRemainingWork;
+        workitem.EstimateTime = root.fields.MicrosoftVSTSSchedulingOriginalEstimate;
+        workitem.CompletedTime = root.fields.MicrosoftVSTSSchedulingCompletedWork;
+        workitem.ProjectId = projectId;
+        workitem.ProjectName = root.fields.SystemTeamProject;
+        return workitem;
+    }
+
+    private async Task CreateOrUpdate(DevOpsWorkItem w)
+    {
+        try
+        {
+            var wDb = _context.WorkItems.FirstOrDefault(x => x.Id.Equals(w.Id));
+            if (wDb is null)
+            {
+                _context.WorkItems.Add(w);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                wDb.Created = w.Created;
+                wDb.ProjectName = w.ProjectName;
+                wDb.LastChange = w.LastChange;
+                wDb.Activated = w.Activated;
+                wDb.RemainingTime = w.RemainingTime;
+                wDb.EstimateTime = w.EstimateTime;
+                wDb.CompletedTime = w.CompletedTime;
+                wDb.ProjectId = w.ProjectId;
+                wDb.AssignetUser = w.AssignetUser;
+                wDb.Title = w.Title;
+                await _context.SaveChangesAsync();
+            }
+        }
+        catch (Exception err)
+        {
+            _logger.LogError(err.Message, err);
         }
     }
 }

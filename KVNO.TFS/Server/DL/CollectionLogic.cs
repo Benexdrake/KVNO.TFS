@@ -1,45 +1,67 @@
-﻿using KVNO.TFS.Server.Data;
-using KVNO.TFS.Shared.Models;
+﻿namespace KVNO.TFS.Server.DL;
 
-namespace KVNO.TFS.Server.DL
+public class CollectionLogic : ICollectionLogic
 {
-    public class CollectionLogic
+    private readonly HttpClient _http;
+    private readonly IConfiguration _conf;
+    private readonly ILogger<CollectionLogic> _logger;
+    private readonly DevOpsDbContext _context;
+
+    public CollectionLogic(IHttpClientFactory clientFactory, IConfiguration conf, ILogger<CollectionLogic> logger, DevOpsDbContext context)
     {
-        private readonly HttpClient _http;
-        private readonly IConfiguration _conf;
-        private readonly ILogger<CollectionLogic> _logger;
-        private readonly DevOpsDbContext _context;
+        _http = clientFactory.CreateClient("default");
+        _conf = conf;
+        _logger = logger;
+        _context = context;
+    }
 
-        public CollectionLogic(IHttpClientFactory clientFactory, IConfiguration conf, ILogger<CollectionLogic> logger)
-        {
-            _http = clientFactory.CreateClient("default");
-            _conf = conf;
-            _logger = logger;
-        }
-
-        public async Task<DevOpsCollection[]?> GetCollectionsAsync()
+    /// <summary>
+    /// Gets an Array from DevOpsCollection from the DevOps API
+    /// </summary>
+    /// <returns></returns>
+    public async Task GetCollectionsAsync()
+    {
+        try
         {
             var tfsCollections = await _http.GetFromJsonAsync<TFSModels.Collection.Rootobject>("_apis/projectCollections");
-            if(tfsCollections is not null)
+            if (tfsCollections is not null)
             {
-                List<DevOpsCollection> collections = new();
-                foreach (var collection in tfsCollections.value) 
+                foreach (var collection in tfsCollections.value)
                 {
-                    collections.Add(new DevOpsCollection()
+                    var c = new DevOpsCollection()
                     {
                         Id = collection.id,
-                        Name = collection.name,
-                        Url = collection.url
-                    });
+                        Name = collection.name
+                    };
+                    await CreateOrUpdate(c);
                 }
-                return collections.ToArray();
             }
-            return null;
         }
-
-        public async Task<DevOpsCollection> GetCollectionAsync()
+        catch (Exception err)
         {
-            throw new NotImplementedException();
+            _logger.LogError(err.Message, err);
+        }
+    }
+
+    public async Task CreateOrUpdate(DevOpsCollection c)
+    {
+        try
+        {
+            var cDb = _context.Collections.FirstOrDefault(x => x.Id.Equals(c.Id));
+            if (cDb is null)
+            {
+                _context.Collections.Add(c);
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                cDb.Name = c.Name;
+                await _context.SaveChangesAsync();
+            }
+        }
+        catch (Exception err)
+        {
+            _logger.LogError(err.Message, err);
         }
     }
 }
