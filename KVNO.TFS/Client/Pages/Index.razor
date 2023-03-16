@@ -37,29 +37,29 @@ Welcome to your new app.
 
     protected override async Task OnInitializedAsync()
     {
-        var collections = await cs.GetCollections();
-        if(collections is not null)
-        {
-            List<DevOpsProject> projects = new();
-            List<DevOpsWorkItem> workItems = new();
-            foreach (var col in collections)
-            {
-                var pjs = await ps.GetProjects(col.Name, col.Id);
-                if(pjs is not null)
-                {
-                    foreach (var p in pjs)
-                    {
-                        var witems = await ws.GetWorkItems(col.Name, p.Name, p.Id, "Task");
-                        if (witems is not null)
-                            workItems.AddRange(witems);
-                    }
-                    projects.AddRange(pjs);
-                }
-            }
-
-            Collections = collections;
-            Projects = projects.ToArray();
-            WorkItems = workItems.ToArray();
-        }
+        //var collections = await cs.GetCollections();
+        //if(collections is not null)
+        //{
+        //    List<DevOpsProject> projects = new();
+        //    List<DevOpsWorkItem> workItems = new();
+        //    foreach (var col in collections)
+        //    {
+        //        var pjs = await ps.GetProjects(col.Name, col.Id);
+        //        if(pjs is not null)
+        //        {
+        //            foreach (var p in pjs)
+        //            {
+        //                var witems = await ws.GetWorkItems(col.Name, p.Name, p.Id, "Task");
+        //                if (witems is not null)
+        //                    workItems.AddRange(witems);
+        //            }
+        //            projects.AddRange(pjs);
+        //        }
+        //    }
+        //
+        //    Collections = collections;
+        //    Projects = projects.ToArray();
+        //    WorkItems = workItems.ToArray();
+        //}
     }
 }

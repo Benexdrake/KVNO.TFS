@@ -16,5 +16,11 @@ namespace KVNO.TFS.Client.Services
             var projects = await _http.GetFromJsonAsync<DevOpsProject[]>($"api/project?collectionName={collectionName}&collectionId={collectionId}");
             return projects;
         }
+
+        public async Task<DevOpsProject> GetProject(string projectId)
+        {
+            var projects = await _http.GetFromJsonAsync<DevOpsProject>($"api/project/id?projectId={projectId}");
+            return projects;
+        }
     }
 }

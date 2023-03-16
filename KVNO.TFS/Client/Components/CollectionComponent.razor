@@ -1,0 +1,50 @@
+﻿@page "/collection/{Id}"
+
+@if(CollectionName is not null)
+{
+    <h3>@CollectionName</h3>
+}
+
+@if(Projects is not null)
+{
+    <p>Projects: @Projects.Length</p>
+}
+
+@if(WorkItems is not null)
+{
+    <p>WorkItems: @WorkItems.Length</p>
+}
+
+@if(Time is not null)
+{
+    <p>Time: @Time</p>
+}
+
+
+@if (Projects is not null && WorkItems is not null)
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Work Items</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Projects.Length; i++)
+            {
+                string Id = Projects[i].Id;
+                <tr>
+                    <td>@Projects[i].Name</td>
+                    <td>@WorkItems.Where(x=>x.ProjectId.Equals(Projects[i].Id)).ToList().Count</td>
+                    <td><button class="btn btn-primary" @onclick="() =>OpenProject(Id)">Open</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h1>Please wait, Loading...</h1>
+}

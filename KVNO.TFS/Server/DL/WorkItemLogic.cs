@@ -31,16 +31,21 @@ public class WorkItemLogic : IWorkItemLogic
             var ids = await GetWorkItemIDs(projectName, workItem, url + "/_apis/wit/wiql?api-version=5.1");
             if (ids is not null)
             {
+                var wsDb = _context.WorkItems.Where(x => x.ProjectId.Equals(projectId));
+
                 foreach (var id in ids)
                 {
-                    var wDb = _context.WorkItems.FirstOrDefault(x => x.Id.Equals($"{projectId}-{id}"));
+                    var wDb = wsDb.FirstOrDefault(x => x.Id.Equals($"{projectId}-{id}"));
                     if(wDb is not null)
-                        if (wDb.State.Equals("Closed") || wDb.LastChange.Year < DateTime.Now.Year)
+                        if (wDb.State.Equals("Closed") || wDb.LastChange.Year< DateTime.Now.Year)
                             continue;
-                    var task = await GetWorkItemAsync(collectionName, projectId, id);
-                    if (task is not null)
+                    if(wDb.LastChange.Month == DateTime.Now.Month - 1)
                     {
-                        await CreateOrUpdate(task);
+                        var task = await GetWorkItemAsync(collectionName, projectId, id);
+                        if (task is not null)
+                        {
+                            await CreateOrUpdate(task);
+                        }
                     }
                 }   
             }

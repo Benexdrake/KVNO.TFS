@@ -15,7 +15,7 @@ public class WorkItemController : ControllerBase
     [HttpGet]
     public async Task<ActionResult> Get(string collectionName, string projectName, string projectId, string workItem)
     {
-        await _logic.GetWorkitemsAsync(collectionName, projectName, projectId, workItem);
+        //await _logic.GetWorkitemsAsync(collectionName, projectName, projectId, workItem);
         var workitems = _context.WorkItems.Where(x => x.ProjectId.Equals(projectId));
         if(workitems is not null)
             return Ok(workitems);
@@ -39,6 +39,16 @@ public class WorkItemController : ControllerBase
             return Ok(workItem);
         return BadRequest();
     }
+
+    [HttpGet("projectid")]
+    public async Task<ActionResult> GetByProjectId(string projectId)
+    {
+        var workitem = _context.WorkItems.Where(x => x.ProjectId.Equals(projectId));
+        if (workitem is not null)
+            return Ok(workitem);
+        return BadRequest();
+    }
+
     [HttpGet("all")]
     public async Task<ActionResult> GetAll()
     {

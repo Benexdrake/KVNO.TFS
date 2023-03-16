@@ -1,0 +1,42 @@
+﻿@page "/project/{Id}"
+
+@if(Project is not null && WorkItems is not null)
+{
+    <h3>Project Title: @Project.Name</h3>
+    <p>@Project.Description</p>
+    <p>Last Update Time: @Project.LastUpdateTime</p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Name</th>
+                <th scope="col">State</th>
+                <th scope="col">Type</th>
+                <th scope="col">Assignet User</th>
+                <th scope="col">Created</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < WorkItems.Length; i++)
+            {
+                string Id = WorkItems[i].Id;
+                <tr>
+                    <td>@WorkItems[i].Title</td>
+                    <td>@WorkItems[i].State</td>
+                    <td>@WorkItems[i].Type</td>
+                    <td>@WorkItems[i].AssignetUser</td>
+                    <td>@WorkItems[i].Created</td>
+                    
+                    <td><button class="btn btn-primary" @onclick="() =>OpenWorkItem(Id)">Open</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <h1>Please wait, Loading...</h1>
+}
+
+

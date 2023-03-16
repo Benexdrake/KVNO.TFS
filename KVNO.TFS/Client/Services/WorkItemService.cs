@@ -18,7 +18,19 @@ namespace KVNO.TFS.Client.Services
             return workItems;
         }
 
-        public async Task<DevOpsWorkItem[]> GetAll()
+        public async Task<DevOpsWorkItem[]?> GetByProjectId(string projectId)
+        {
+            var workItems = await _http.GetFromJsonAsync<DevOpsWorkItem[]>($"api/workitem/projectid?projectid={projectId}");
+            return workItems;
+        }
+
+        public async Task<DevOpsWorkItem?> GetById(string id)
+        {
+            var workItem = await _http.GetFromJsonAsync<DevOpsWorkItem>($"api/workitem/id?id={id}");
+            return workItem;
+        }
+
+        public async Task<DevOpsWorkItem[]?> GetAll()
         {
             var workItems = await _http.GetFromJsonAsync<DevOpsWorkItem[]>($"api/workitem/all");
             return workItems;

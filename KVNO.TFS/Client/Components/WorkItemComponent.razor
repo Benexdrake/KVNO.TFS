@@ -1,0 +1,11 @@
+﻿@page "/workitem/{id}";
+
+@if(WorkItem is not null)
+{
+    <h3>@WorkItem.Title</h3>
+    <p>Completed: @WorkItem.CompletedTime</p>
+    <p>Estimate: @WorkItem.EstimateTime</p>
+    <p>Created: @WorkItem.Created</p>
+    <p>Assignet User: @WorkItem.AssignetUser</p>
+    <p>Type: @WorkItem.Type</p>
+}
