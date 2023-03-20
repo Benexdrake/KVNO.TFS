@@ -19,10 +19,11 @@ public class CollectionLogic : ICollectionLogic
     /// Gets an Array from DevOpsCollection from the DevOps API
     /// </summary>
     /// <returns></returns>
-    public async Task GetCollectionsAsync()
+    public async Task<DevOpsCollection[]?> GetCollectionsAsync()
     {
         try
         {
+            List<DevOpsCollection> devOpsCollections = new List<DevOpsCollection>();
             var tfsCollections = await _http.GetFromJsonAsync<TFSModels.Collection.Rootobject>("_apis/projectCollections");
             if (tfsCollections is not null)
             {
@@ -33,14 +34,17 @@ public class CollectionLogic : ICollectionLogic
                         Id = collection.id,
                         Name = collection.name
                     };
+                    devOpsCollections.Add(c);
                     await CreateOrUpdate(c);
                 }
+                return devOpsCollections.ToArray();
             }
         }
         catch (Exception err)
         {
             _logger.LogError(err.Message, err);
         }
+        return null;
     }
 
     public async Task CreateOrUpdate(DevOpsCollection c)

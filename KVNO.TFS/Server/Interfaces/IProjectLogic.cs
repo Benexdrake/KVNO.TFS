@@ -2,5 +2,5 @@
 
 public interface IProjectLogic
 {
-    Task GetProjectsAsync(string collectionName, string collectionId);
+    Task<DevOpsProject[]?> GetProjectsAsync(string collectionName, string collectionId);
 }

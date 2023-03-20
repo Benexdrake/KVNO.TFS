@@ -34,7 +34,7 @@ public class ProjectController : ControllerBase
     [HttpGet("name")]
     public async Task<ActionResult> GetProjectsByName(string name)
     {
-        var projects = _context.Projects.Where(x => x.Name.Equals(name));
+        var projects = _context.Projects.Where(x => x.Name.Contains(name)).ToList();
         if(projects is not null)
             return Ok(projects);
         return BadRequest();

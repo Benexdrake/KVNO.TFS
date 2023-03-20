@@ -6,10 +6,10 @@ public class CollectionController : ControllerBase
 {
     private readonly ICollectionLogic _logic;
     private readonly DevOpsDbContext _context;
-    public CollectionController(IServiceProvider service)
+    public CollectionController(ICollectionLogic logic, DevOpsDbContext context)
     {
-        _logic = service.GetRequiredService<ICollectionLogic>();
-        _context = service.GetRequiredService<DevOpsDbContext>();
+        _logic = logic;
+        _context = context;
     }
 
     [HttpGet]

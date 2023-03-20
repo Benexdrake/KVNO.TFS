@@ -37,7 +37,7 @@
                 string Id = Projects[i].Id;
                 <tr>
                     <td>@Projects[i].Name</td>
-                    <td>@WorkItems.Where(x=>x.ProjectId.Equals(Projects[i].Id)).ToList().Count</td>
+                    <td>@WorkItems[i]</td>
                     <td><button class="btn btn-primary" @onclick="() =>OpenProject(Id)">Open</button></td>
                 </tr>
             }

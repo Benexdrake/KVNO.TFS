@@ -3,5 +3,5 @@
 public interface ICollectionLogic
 {
     Task CreateOrUpdate(DevOpsCollection c);
-    Task GetCollectionsAsync();
+    Task<DevOpsCollection[]> GetCollectionsAsync();
 }

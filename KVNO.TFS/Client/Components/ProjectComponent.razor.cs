@@ -10,6 +10,8 @@ namespace KVNO.TFS.Client.Components
         public string Id { get; set; }
 
         [Inject]
+        public CollectionService Cs { get; set; }
+        [Inject]
         public ProjectService Ps { get; set; }
         [Inject]
         public WorkItemService Ws { get; set; }
@@ -22,7 +24,8 @@ namespace KVNO.TFS.Client.Components
         protected override async Task OnParametersSetAsync()
         {
             Project = await Ps.GetProject(Id);
-            WorkItems = await Ws.GetByProjectId(Id);
+            var collection = await Cs.GetCollectionById(Project.CollectionId);
+            WorkItems = await Ws.GetWorkItems(collection.Name, Project.Name, Project.Id, "Task");
 
         }
 

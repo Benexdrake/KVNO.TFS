@@ -24,10 +24,12 @@ public partial class CollectionComponent
     public string Time { get; set; }
 
     public DevOpsProject[] Projects { get; set; } = null;
-    public DevOpsWorkItem[] WorkItems { get; set; }
+    public int[] WorkItems { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
+        Stopwatch sw = new();
+        sw.Start();
         var collection = await cs.GetCollections();
         if (collection is not null)
         {
@@ -36,17 +38,18 @@ public partial class CollectionComponent
             var projects = await ps.GetProjects(collectionName, Id);
             if (projects is not null)
             {
-                List<DevOpsWorkItem> WorkItemList = new();
+                List<int> WorkItemList = new();
                 foreach (var project in projects)
                 {
-                    var workitems = await ws.GetWorkItems(collectionName, project.Name, project.Id, "Task");
-                    if (workitems is not null)
-                        WorkItemList.AddRange(workitems);
+                    var workitems = await ws.GetAllByProjectId(project.Id);
+                    WorkItemList.Add(workitems);
                 }
                 WorkItems = WorkItemList.ToArray();
                 Projects = projects;
             }
         }
+        Time = sw.Elapsed.ToString();
+        sw.Stop();
     }
 
     public void OpenProject(string projectId)

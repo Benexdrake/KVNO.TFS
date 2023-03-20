@@ -30,9 +30,9 @@ namespace KVNO.TFS.Client.Services
             return workItem;
         }
 
-        public async Task<DevOpsWorkItem[]?> GetAll()
+        public async Task<int> GetAllByProjectId(string projectId)
         {
-            var workItems = await _http.GetFromJsonAsync<DevOpsWorkItem[]>($"api/workitem/all");
+            var workItems = await _http.GetFromJsonAsync<int>($"api/workitem/all?projectId={projectId}");
             return workItems;
         }
         

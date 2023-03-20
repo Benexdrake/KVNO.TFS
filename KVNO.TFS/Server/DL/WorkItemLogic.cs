@@ -23,8 +23,9 @@ public class WorkItemLogic : IWorkItemLogic
     /// <param name="projectId"></param>
     /// <param name="workItem"></param>
     /// <returns></returns>
-    public async Task GetWorkitemsAsync(string collectionName, string projectName, string projectId, string workItem)
+    public async Task<DevOpsWorkItem[]?> GetWorkitemsAsync(string collectionName, string projectName, string projectId, string workItem)
     {
+        List<DevOpsWorkItem> devOpsWorkItems = new();
         try
         {
             var url = $"{collectionName}/{projectId}";
@@ -37,9 +38,20 @@ public class WorkItemLogic : IWorkItemLogic
                 {
                     var wDb = wsDb.FirstOrDefault(x => x.Id.Equals($"{projectId}-{id}"));
                     if(wDb is not null)
-                        if (wDb.State.Equals("Closed") || wDb.LastChange.Year< DateTime.Now.Year)
-                            continue;
-                    if(wDb.LastChange.Month == DateTime.Now.Month - 1)
+                    {
+                        devOpsWorkItems.Add(wDb);
+                            if (wDb.State.Equals("Closed") || wDb.LastChange.Year< DateTime.Now.Year)
+                                continue;
+                        if(wDb.LastChange.Month == DateTime.Now.Month - 1)
+                        {
+                            var task = await GetWorkItemAsync(collectionName, projectId, id);
+                            if (task is not null)
+                            {
+                                await CreateOrUpdate(task);
+                            }
+                        }
+                    }
+                    else
                     {
                         var task = await GetWorkItemAsync(collectionName, projectId, id);
                         if (task is not null)
@@ -54,6 +66,7 @@ public class WorkItemLogic : IWorkItemLogic
         {
             _logger.LogError(err.Message, err);
         }
+        return devOpsWorkItems.ToArray() ;
     }
 
     private async Task<DevOpsWorkItem?> GetWorkItemAsync(string collectionName, string projectId, int id)

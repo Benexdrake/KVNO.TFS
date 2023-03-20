@@ -21,24 +21,31 @@ public class ProjectLogic : IProjectLogic
     /// <param name="collectionName"></param>
     /// <param name="collectionId"></param>
     /// <returns></returns>
-    public async Task GetProjectsAsync(string collectionName, string collectionId)
+    public async Task<DevOpsProject[]?> GetProjectsAsync(string collectionName, string collectionId)
     {
         try
         {
+            List<DevOpsProject> devOpsProjects = new();
             var tfsProjects = await _http.GetFromJsonAsync<TFSModels.Project.Rootobject>($"{collectionName}/_apis/projects");
             if (tfsProjects is not null)
             {
                 foreach (var p in tfsProjects.value)
                 {
                     var project = await ProjectTransform(p, collectionId);
-                    await CreateOrUpdate(project);
+                    if(project is not null)
+                    {
+                        devOpsProjects.Add(project);
+                        await CreateOrUpdate(project);
+                    }
                 }
+                return devOpsProjects.ToArray();
             }
         }
         catch (Exception err)
         {
             _logger.LogError(err.Message, err);
         }
+        return null;
     }
 
     private async Task<DevOpsProject> ProjectTransform(TFSModels.Project.Value value, string collectionId)
