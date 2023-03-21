@@ -6,10 +6,10 @@ public class ProjectController : ControllerBase
 {
     private readonly IProjectLogic _logic;
     private readonly DevOpsDbContext _context;
-    public ProjectController(IServiceProvider service)
+    public ProjectController(IProjectLogic logic, DevOpsDbContext context)
     {
-        _logic = service.GetRequiredService<IProjectLogic>();
-        _context = service.GetRequiredService<DevOpsDbContext>();
+        _logic = logic;
+        _context = context;
     }
 
     [HttpGet]

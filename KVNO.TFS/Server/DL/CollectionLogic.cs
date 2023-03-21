@@ -3,14 +3,12 @@
 public class CollectionLogic : ICollectionLogic
 {
     private readonly HttpClient _http;
-    private readonly IConfiguration _conf;
     private readonly ILogger<CollectionLogic> _logger;
     private readonly DevOpsDbContext _context;
 
-    public CollectionLogic(IHttpClientFactory clientFactory, IConfiguration conf, ILogger<CollectionLogic> logger, DevOpsDbContext context)
+    public CollectionLogic(IHttpClientFactory clientFactory, ILogger<CollectionLogic> logger, DevOpsDbContext context)
     {
         _http = clientFactory.CreateClient("default");
-        _conf = conf;
         _logger = logger;
         _context = context;
     }

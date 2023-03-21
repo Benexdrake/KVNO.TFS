@@ -6,10 +6,10 @@ public class WorkItemController : ControllerBase
 {
     private readonly IWorkItemLogic _logic;
     private readonly DevOpsDbContext _context;
-    public WorkItemController(IServiceProvider service)
+    public WorkItemController(IWorkItemLogic logic, DevOpsDbContext context)
     {
-        _logic = service.GetRequiredService<IWorkItemLogic>();
-        _context = service.GetRequiredService<DevOpsDbContext>();
+        _logic = logic;
+        _context = context;
     }
 
     [HttpGet]
@@ -49,8 +49,8 @@ public class WorkItemController : ControllerBase
         return BadRequest();
     }
 
-    [HttpGet("all")]
-    public async Task<ActionResult> GetAllByProjectId(string projectId)
+    [HttpGet("count")]
+    public async Task<ActionResult> GetWorkItemsCountByProjectId(string projectId)
     {
         var workitems = _context.WorkItems.Where(x => x.ProjectId.Equals(projectId));   
         if (workitems is not null)

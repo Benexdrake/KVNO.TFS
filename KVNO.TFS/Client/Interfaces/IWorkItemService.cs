@@ -1,0 +1,9 @@
+﻿namespace KVNO.TFS.Client.Interfaces;
+
+public interface IWorkItemService
+{
+    Task<DevOpsWorkItem?> GetById(string id);
+    Task<DevOpsWorkItem[]?> GetByProjectId(string projectId);
+    Task<DevOpsWorkItem[]?> GetWorkItems(string collectionName, string projectName, string projectId, string workItem);
+    Task<int> GetWorkItemsCountByProjectId(string projectId);
+}

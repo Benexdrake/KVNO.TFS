@@ -3,14 +3,12 @@
 public class ProjectLogic : IProjectLogic
 {
     private readonly HttpClient _http;
-    private readonly IConfiguration _conf;
     private readonly ILogger<ProjectLogic> _logger;
     private readonly DevOpsDbContext _context;
 
-    public ProjectLogic(IHttpClientFactory clientFactory, IConfiguration conf, ILogger<ProjectLogic> logger, DevOpsDbContext context)
+    public ProjectLogic(IHttpClientFactory clientFactory, ILogger<ProjectLogic> logger, DevOpsDbContext context)
     {
         _http = clientFactory.CreateClient("default");
-        _conf = conf;
         _logger = logger;
         _context = context;
     }
