@@ -11,7 +11,9 @@ builder.Services.AddScoped<IWorkItemLogic, WorkItemLogic>();
 
 builder.Services.AddScoped<CollectionController>();
 builder.Services.AddScoped<ProjectController>();
-builder.Services.AddScoped<WorkItemController>();
+builder.Services.AddScoped<WorkItemController>(); 
+
+builder.Services.AddScoped<WorkItemBusinessLogic>();
 
 
 builder.Services.AddHttpClient("default", c =>

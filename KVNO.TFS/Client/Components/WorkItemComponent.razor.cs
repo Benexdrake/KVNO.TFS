@@ -6,7 +6,7 @@ public partial class WorkItemComponent
     public string Id { get; set; }
 
     [Inject]
-    public WorkItemService Ws { get; set; }
+    public IWorkItemService Ws { get; set; }
 
     public DevOpsWorkItem WorkItem { get; set; }
 

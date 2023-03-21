@@ -26,10 +26,10 @@ public class WorkItemService : IWorkItemService
         return workItem;
     }
 
-    public async Task<int> GetWorkItemsCountByProjectId(string projectId)
+    public async Task<WorkItemsDetails?> GetWorkItemDetails(string projectId)
     {
-        var workItems = await _http.GetFromJsonAsync<int>($"api/workitem/count?projectId={projectId}");
-        return workItems;
+        var detail = await _http.GetFromJsonAsync<WorkItemsDetails>($"api/workitem/details?projectId={projectId}");
+        return detail;
     }
 
 }

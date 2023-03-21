@@ -3,11 +3,11 @@
 public partial class CollectionComponent
 {
     [Inject]
-    public CollectionService cs { get; set; }
+    public ICollectionService cs { get; set; }
     [Inject]
-    public ProjectService ps { get; set; }
+    public IProjectService ps { get; set; }
     [Inject]
-    public WorkItemService ws { get; set; }
+    public IWorkItemService ws { get; set; }
     [Inject]
     public NavigationManager NavigationManager { get; set; }
 
@@ -16,7 +16,7 @@ public partial class CollectionComponent
     public string Id { get; set; } = string.Empty;
     public string CollectionName { get; set; }
     public DevOpsProject[] Projects { get; set; } = null;
-    public int[] WorkItems { get; set; }
+    public WorkItemsDetails[] WorkItemsDetails { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -32,13 +32,13 @@ public partial class CollectionComponent
             var projects = await ps.GetProjects(CollectionName, Id);
             if (projects is not null)
             {
-                List<int> WorkItemList = new();
+                List<WorkItemsDetails> details = new();
                 foreach (var project in projects)
                 {
-                    var workitems = await ws.GetWorkItemsCountByProjectId(project.Id);
-                    WorkItemList.Add(workitems);
+                    var detail = await ws.GetWorkItemDetails(project.Id);
+                    details.Add(detail);
                 }
-                WorkItems = WorkItemList.ToArray();
+                WorkItemsDetails = details.ToArray();
                 Projects = projects;
             }
         }

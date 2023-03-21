@@ -6,11 +6,11 @@ public partial class ProjectComponent
     public string Id { get; set; }
 
     [Inject]
-    public CollectionService Cs { get; set; }
+    public ICollectionService Cs { get; set; }
     [Inject]
-    public ProjectService Ps { get; set; }
+    public IProjectService Ps { get; set; }
     [Inject]
-    public WorkItemService Ws { get; set; }
+    public IWorkItemService Ws { get; set; }
     [Inject]
     public NavigationManager NavigationManager { get; set; }
 

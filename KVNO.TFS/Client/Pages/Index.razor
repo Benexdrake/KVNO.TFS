@@ -1,65 +1,67 @@
 ﻿@page "/"
 @using KVNO.TFS.Client.Services;
 @using KVNO.TFS.Shared.Models;
-@inject CollectionService cs;
-@inject ProjectService ps;
-@inject WorkItemService ws;
+@inject ICollectionService cs;
+@inject IProjectService ps;
+@inject IWorkItemService ws;
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-@if(Collections is not null)
+@if(loaded)
 {
-    foreach (var col in Collections)
-    {
-        <p>@col.Name</p>
-    }
+    <h1>Welcome at the super cool and crazy working awsome not much making App</h1>
+    
+    <p>The TFS has:<br />
+        Collections: @Collections.Length<br>
+        Projects: @Projects.Length<br>
+        WorkItems: @workitemsCount<br>
+    </p>
 }
 
-@if(Projects is not null && WorkItems is not null)
-{
-    foreach (var p in Projects)
-    {
-        <p>Project: @p.Name - Tasks: @WorkItems.Where(x => x.ProjectId.Equals(p.Id)).ToList().Count</p>
-    }    
-}
 
-<SurveyPrompt Title="How is Blazor working for you?" />
 
 @code
 {
+    bool loaded = false;
     public DevOpsCollection[] Collections { get; set; }
     public DevOpsProject[] Projects { get; set; }
-    public DevOpsWorkItem[] WorkItems { get; set; }
+    public WorkItemsDetails[] WorkItemsDetails { get; set; }
+    int workitemsCount = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        //var collections = await cs.GetCollections();
-        //if(collections is not null)
-        //{
-        //    List<DevOpsProject> projects = new();
-        //    List<DevOpsWorkItem> workItems = new();
-        //    foreach (var col in collections)
-        //    {
-        //        var pjs = await ps.GetProjects(col.Name, col.Id);
-        //        if(pjs is not null)
-        //        {
-        //            foreach (var p in pjs)
-        //            {
-        //                var witems = await ws.GetWorkItems(col.Name, p.Name, p.Id, "Task");
-        //                if (witems is not null)
-        //                    workItems.AddRange(witems);
-        //            }
-        //            projects.AddRange(pjs);
-        //        }
-        //    }
-        //
-        //    Collections = collections;
-        //    Projects = projects.ToArray();
-        //    WorkItems = workItems.ToArray();
-        //}
+        var collections = await cs.GetCollections();
+        if(collections is not null)
+        {
+            var projectList = new List<DevOpsProject>();
+            var detailslist = new List<WorkItemsDetails>();
+            foreach (var col in collections)
+            {
+                var projects = await ps.GetProjects(col.Name, col.Id);
+                if(projects is not null)
+                {
+                    if(projects is not null)
+                        projectList.AddRange(projects);
+                }
+
+                foreach (var pj in projectList)
+                {
+                    var details = await ws.GetWorkItemDetails(pj.Id);
+                    if (details is not null)
+                        detailslist.Add(details);
+                }
+                Collections = collections;
+                Projects = projectList.ToArray();
+                WorkItemsDetails = detailslist.ToArray();
+
+                foreach (var detail in WorkItemsDetails)
+                {
+                    workitemsCount += detail.Count;
+                }
+            }
+        }
+       
+
+        loaded = true;
     }
 }

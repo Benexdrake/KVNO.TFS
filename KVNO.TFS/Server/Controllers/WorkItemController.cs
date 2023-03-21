@@ -6,10 +6,13 @@ public class WorkItemController : ControllerBase
 {
     private readonly IWorkItemLogic _logic;
     private readonly DevOpsDbContext _context;
-    public WorkItemController(IWorkItemLogic logic, DevOpsDbContext context)
+    private readonly WorkItemBusinessLogic _bl;
+
+    public WorkItemController(IWorkItemLogic logic, DevOpsDbContext context, WorkItemBusinessLogic _bl)
     {
         _logic = logic;
         _context = context;
+        this._bl = _bl;
     }
 
     [HttpGet]
@@ -49,12 +52,16 @@ public class WorkItemController : ControllerBase
         return BadRequest();
     }
 
-    [HttpGet("count")]
+    [HttpGet("details")]
     public async Task<ActionResult> GetWorkItemsCountByProjectId(string projectId)
     {
-        var workitems = _context.WorkItems.Where(x => x.ProjectId.Equals(projectId));   
+        var workitems = _context.WorkItems.Where(x => x.ProjectId.Equals(projectId));
+
         if (workitems is not null)
-            return Ok(workitems.ToList().Count);
+        {
+            var detail = _bl.WorkItemsDetailsConverter(workitems.ToArray());
+            return Ok(detail);
+        }
         return BadRequest();
     }
 }
