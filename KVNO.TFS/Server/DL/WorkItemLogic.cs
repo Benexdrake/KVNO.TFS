@@ -23,9 +23,19 @@ public class WorkItemLogic : IWorkItemLogic
     /// <returns></returns>
     public async Task<DevOpsWorkItem[]?> GetWorkitemsAsync(string collectionName, string projectName, string projectId, string workItem)
     {
-        List<DevOpsWorkItem> devOpsWorkItems = new();
+        if(System.Diagnostics.Debugger.IsAttached)
+        {
+            var mocks = new WorkItemMock().GetWorkItemsMockup();
+            foreach (var w in mocks)
+            {
+                await CreateOrUpdate(w);
+            }
+            return mocks.Where(x => x.ProjectId.Equals(projectId)).ToArray();
+        }
+
         try
         {
+            List<DevOpsWorkItem> devOpsWorkItems = new();
             var url = $"{collectionName}/{projectId}";
             var ids = await GetWorkItemIDs(projectName, workItem, url + "/_apis/wit/wiql?api-version=5.1");
             if (ids is not null)
@@ -59,12 +69,13 @@ public class WorkItemLogic : IWorkItemLogic
                     }
                 }   
             }
+            return devOpsWorkItems.ToArray() ;
         }
         catch (Exception err)
         {
             _logger.LogError(err.Message, err);
         }
-        return devOpsWorkItems.ToArray() ;
+        return null;
     }
 
     private async Task<DevOpsWorkItem?> GetWorkItemAsync(string collectionName, string projectId, int id)
@@ -141,7 +152,6 @@ public class WorkItemLogic : IWorkItemLogic
         workitem.EstimateTime = root.fields.MicrosoftVSTSSchedulingOriginalEstimate;
         workitem.CompletedTime = root.fields.MicrosoftVSTSSchedulingCompletedWork;
         workitem.ProjectId = projectId;
-        workitem.ProjectName = root.fields.SystemTeamProject;
         return workitem;
     }
 
@@ -158,7 +168,6 @@ public class WorkItemLogic : IWorkItemLogic
             else
             {
                 wDb.Created = w.Created;
-                wDb.ProjectName = w.ProjectName;
                 wDb.LastChange = w.LastChange;
                 wDb.Activated = w.Activated;
                 wDb.RemainingTime = w.RemainingTime;

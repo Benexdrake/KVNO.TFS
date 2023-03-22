@@ -1,3 +1,5 @@
+using KVNO.TFS.Server.Mockup;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -11,7 +13,12 @@ builder.Services.AddScoped<IWorkItemLogic, WorkItemLogic>();
 
 builder.Services.AddScoped<CollectionController>();
 builder.Services.AddScoped<ProjectController>();
-builder.Services.AddScoped<WorkItemController>(); 
+builder.Services.AddScoped<WorkItemController>();
+
+// Mockups
+builder.Services.AddSingleton<CollectionMock>();
+builder.Services.AddSingleton<ProjectMock>();
+builder.Services.AddSingleton<WorkItemMock>();
 
 builder.Services.AddScoped<WorkItemBusinessLogic>();
 

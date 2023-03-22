@@ -21,6 +21,17 @@ public class ProjectLogic : IProjectLogic
     /// <returns></returns>
     public async Task<DevOpsProject[]?> GetProjectsAsync(string collectionName, string collectionId)
     {
+        if(System.Diagnostics.Debugger.IsAttached)
+        {
+            var mocks = new ProjectMock().GetProjectsMockups();
+
+            foreach (var p in mocks)
+            {
+                await CreateOrUpdate(p);
+            }
+
+            return mocks.Where(x => x.CollectionId.Equals(collectionId)).ToArray();
+        }
         try
         {
             List<DevOpsProject> devOpsProjects = new();

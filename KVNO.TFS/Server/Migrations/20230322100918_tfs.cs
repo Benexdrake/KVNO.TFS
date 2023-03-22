@@ -54,7 +54,6 @@ namespace KVNO.TFS.Server.Migrations
                     RemainingTime = table.Column<float>(type: "real", nullable: false),
                     EstimateTime = table.Column<float>(type: "real", nullable: false),
                     CompletedTime = table.Column<float>(type: "real", nullable: false),
-                    ProjectName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ProjectId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>

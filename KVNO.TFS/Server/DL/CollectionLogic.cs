@@ -19,28 +19,40 @@ public class CollectionLogic : ICollectionLogic
     /// <returns></returns>
     public async Task<DevOpsCollection[]?> GetCollectionsAsync()
     {
-        try
+        if(System.Diagnostics.Debugger.IsAttached)
         {
-            List<DevOpsCollection> devOpsCollections = new List<DevOpsCollection>();
-            var tfsCollections = await _http.GetFromJsonAsync<TFSModels.Collection.Rootobject>("_apis/projectCollections");
-            if (tfsCollections is not null)
+            var mocks = new CollectionMock().GetCollectionMockups();
+            foreach (var col in mocks)
             {
-                foreach (var collection in tfsCollections.value)
-                {
-                    var c = new DevOpsCollection()
-                    {
-                        Id = collection.id,
-                        Name = collection.name
-                    };
-                    devOpsCollections.Add(c);
-                    await CreateOrUpdate(c);
-                }
-                return devOpsCollections.ToArray();
+                await CreateOrUpdate(col);
             }
+            return mocks;
         }
-        catch (Exception err)
+        else
         {
-            _logger.LogError(err.Message, err);
+            try
+            {
+                List<DevOpsCollection> devOpsCollections = new List<DevOpsCollection>();
+                var tfsCollections = await _http.GetFromJsonAsync<TFSModels.Collection.Rootobject>("_apis/projectCollections");
+                if (tfsCollections is not null)
+                {
+                    foreach (var collection in tfsCollections.value)
+                    {
+                        var c = new DevOpsCollection()
+                        {
+                            Id = collection.id,
+                            Name = collection.name
+                        };
+                        devOpsCollections.Add(c);
+                        await CreateOrUpdate(c);
+                    }
+                    return devOpsCollections.ToArray();
+                }
+            }
+            catch (Exception err)
+            {
+                _logger.LogError(err.Message, err);
+            }
         }
         return null;
     }

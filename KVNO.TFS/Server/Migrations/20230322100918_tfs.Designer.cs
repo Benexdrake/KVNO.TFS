@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace KVNO.TFS.Server.Migrations
 {
     [DbContext(typeof(DevOpsDbContext))]
-    [Migration("20230315130430_tfs")]
+    [Migration("20230322100918_tfs")]
     partial class tfs
     {
         /// <inheritdoc />
@@ -89,10 +89,6 @@ namespace KVNO.TFS.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ProjectId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ProjectName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

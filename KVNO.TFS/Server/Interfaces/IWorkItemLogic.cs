@@ -2,5 +2,5 @@
 
 public interface IWorkItemLogic
 {
-    Task<DevOpsWorkItem[]?> GetWorkitemsAsync(string collectionName, string projectName, string projectId, string workItem);
+    Task<DevOpsWorkItem[]?> GetWorkitemsAsync(string collectionName, string projectName,string projectId, string workItem);
 }
