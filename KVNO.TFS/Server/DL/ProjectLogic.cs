@@ -57,6 +57,19 @@ public class ProjectLogic : IProjectLogic
         return null;
     }
 
+    public async Task<List<string>> GetProjectSearchSuggestion(string searchText, string collectionId, string collectionName)
+    {
+        var projects = _context.Projects.Where(x => x.Name.ToLower().Contains(searchText.ToLower())).ToList();
+
+        List<string> result = new List<string>();
+
+        foreach (var project in projects)
+        {
+            result.Add(project.Name);
+        }
+        return result;
+    }
+
     private async Task<DevOpsProject> ProjectTransform(TFSModels.Project.Value value, string collectionId)
     {
         var p = new DevOpsProject();

@@ -1,6 +1,6 @@
-﻿namespace KVNO.TFS.Client.Components;
+﻿namespace KVNO.TFS.Client.Pages;
 
-public partial class CollectionComponent
+public partial class CollectionPage
 {
     [Inject]
     public ICollectionService cs { get; set; }

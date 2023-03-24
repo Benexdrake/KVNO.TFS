@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{AC13B4
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{995A9EAC-4E51-4621-BB98-05DD7B360A11}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KVNO.TFS.Client.Tests", "KVNO.TFS.Client.Tests\KVNO.TFS.Client.Tests.csproj", "{728FB2BF-3C2B-41E9-ADF7-D0D0E66FBC4F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KVNO.TFS.Client.Tests", "KVNO.TFS.Client.Tests\KVNO.TFS.Client.Tests.csproj", "{728FB2BF-3C2B-41E9-ADF7-D0D0E66FBC4F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

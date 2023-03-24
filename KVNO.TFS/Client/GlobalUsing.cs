@@ -1,4 +1,7 @@
 ﻿global using KVNO.TFS.Client;
+global using KVNO.TFS.Client.Components;
+global using KVNO.TFS.Client.Components.Collection;
+global using KVNO.TFS.Client.Components.Project;
 global using KVNO.TFS.Client.Interfaces;
 global using KVNO.TFS.Client.Services;
 global using KVNO.TFS.Shared.Models;

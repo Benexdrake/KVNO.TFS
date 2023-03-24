@@ -1,4 +1,5 @@
 ﻿@page "/collection/{Id}"
+@using KVNO.TFS.Client.Components.Collection
 
 @if(CollectionName is not null)
 {
@@ -7,6 +8,8 @@
 
 @if (Projects is not null && WorkItemsDetails is not null)
 {
+    <CollectionSearchComponent></CollectionSearchComponent>
+
     <table class="table table-striped">
         <thead>
             <tr>

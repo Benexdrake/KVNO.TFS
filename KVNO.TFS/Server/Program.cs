@@ -22,6 +22,8 @@ builder.Services.AddSingleton<WorkItemMock>();
 
 builder.Services.AddScoped<WorkItemBusinessLogic>();
 
+builder.Services.AddSwaggerGen();
+
 
 builder.Services.AddHttpClient("default", c =>
 {
@@ -38,6 +40,9 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
+
+    app.UseSwagger();
+    app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "KVNO.TFS.Server"); });
 }
 else
 {

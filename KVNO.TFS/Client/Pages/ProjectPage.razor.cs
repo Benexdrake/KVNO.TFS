@@ -1,6 +1,6 @@
-﻿namespace KVNO.TFS.Client.Components;
+﻿namespace KVNO.TFS.Client.Pages;
 
-public partial class ProjectComponent
+public partial class ProjectPage
 {
     [Parameter]
     public string Id { get; set; }

@@ -1,10 +1,13 @@
 ﻿@page "/project/{Id}"
+@using KVNO.TFS.Client.Components.Project
 
 @if(Project is not null && WorkItems is not null)
 {
     <h3>Project Title: @Project.Name</h3>
     <p>@Project.Description</p>
     <p>Last Update Time: @Project.LastUpdateTime</p>
+
+    <ProjectSearchComponent></ProjectSearchComponent>
 
     <table class="table table-striped">
         <thead>

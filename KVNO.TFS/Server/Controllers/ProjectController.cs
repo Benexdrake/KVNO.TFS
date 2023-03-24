@@ -40,6 +40,17 @@ public class ProjectController : ControllerBase
         return BadRequest();
     }
 
+    [HttpGet("searchsuggestion")]
+    public async Task<ActionResult> GetSearchSuggestion(string searchtext, string collectionId)
+    {
+        var collection = _context.Collections.FirstOrDefault(x => x.Id.Equals(collectionId));
+        var suggestion = _logic.GetProjectSearchSuggestion(searchtext, collectionId,collection.Name);
+
+        if(suggestion is not null) 
+            return Ok(suggestion);
+        return BadRequest();
+    }
+
     [HttpGet("all")]
     public async Task<ActionResult> GetAll()
     {
