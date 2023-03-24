@@ -55,7 +55,7 @@ public class WorkItemController : ControllerBase
     [HttpGet("details")]
     public async Task<ActionResult> GetWorkItemsCountByProjectId(string projectId)
     {
-        var workitems = _context.WorkItems.Where(x => x.ProjectId.Equals(projectId));
+        var workitems = _context.WorkItems.Where(x => x.ProjectId.Equals(projectId)).ToList();
 
         if (workitems is not null)
         {

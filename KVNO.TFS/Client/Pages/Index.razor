@@ -43,21 +43,21 @@
                     if(projects is not null)
                         projectList.AddRange(projects);
                 }
+            }
+            Console.WriteLine(projectList.Count);
+            foreach (var pj in projectList)
+            {
+                var details = await ws.GetWorkItemDetails(pj.Id);
+                if (details is not null)
+                    detailslist.Add(details);
+            }
+            Collections = collections;
+            Projects = projectList.ToArray();
+            WorkItemsDetails = detailslist.ToArray();
 
-                foreach (var pj in projectList)
-                {
-                    var details = await ws.GetWorkItemDetails(pj.Id);
-                    if (details is not null)
-                        detailslist.Add(details);
-                }
-                Collections = collections;
-                Projects = projectList.ToArray();
-                WorkItemsDetails = detailslist.ToArray();
-
-                foreach (var detail in WorkItemsDetails)
-                {
-                    workitemsCount += detail.Count;
-                }
+            foreach (var detail in WorkItemsDetails)
+            {
+                workitemsCount += detail.Count;
             }
         }
        

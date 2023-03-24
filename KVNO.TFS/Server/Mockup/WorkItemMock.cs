@@ -10,7 +10,7 @@
 
             for (int i = 1; i <= 5; i++)
             {
-                var t = new DevOpsWorkItem($"5e66c86e-07e1-4400-a352-499b4031c5c4-{i}", $"Task{i}", "Not,Available","Closed","Task","Completed", DateTime.Now, DateTime.Now, DateTime.Now, 0,3,5, "5e66c86e-07e1-4400-a352-499b4031c5c4");
+                var t = new DevOpsWorkItem($"5e66c86e-07e1-4400-a352-499b4031c5c4-{i}", $"Task{i}", "Not,Available","Closed","Task","Completed", DateTime.Now, DateTime.Now, DateTime.Now, 0,5,5, "5e66c86e-07e1-4400-a352-499b4031c5c4");
                 list.Add(t);
             }
 
@@ -23,7 +23,7 @@
             //Projekt 1-3 - 25c20ce8-02f0-4a6b-9afd-0059ee97f9d3
             for (int i = 1; i <= 5; i++)
             {
-                var t = new DevOpsWorkItem($"25c20ce8-02f0-4a6b-9afd-0059ee97f9d3-{i}", $"Task{i}", "Not,Available", "Closed", "Task", "Completed", DateTime.Now, DateTime.Now, DateTime.Now, 0, 3, 5, "25c20ce8-02f0-4a6b-9afd-0059ee97f9d3");
+                var t = new DevOpsWorkItem($"25c20ce8-02f0-4a6b-9afd-0059ee97f9d3-{i}", $"Task{i}", "Not,Available", "Closed", "Task", "Completed", DateTime.Now, DateTime.Now, DateTime.Now, 0, 5, 5, "25c20ce8-02f0-4a6b-9afd-0059ee97f9d3");
                 list.Add(t);
             }
             //Projekt 1-4 - 216ab3df-0e2a-40cc-b508-0af588bfa53b
@@ -35,7 +35,7 @@
             //Projekt 1-5 - bc21e385-8c16-4542-8942-bee3979d891e
             for (int i = 1; i <= 5; i++)
             {
-                var t = new DevOpsWorkItem($"bc21e385-8c16-4542-8942-bee3979d891e-{i}", $"Task{i}", "Not,Available", "Closed", "Task", "Completed", DateTime.Now, DateTime.Now, DateTime.Now, 0, 3, 5, "bc21e385-8c16-4542-8942-bee3979d891e");
+                var t = new DevOpsWorkItem($"bc21e385-8c16-4542-8942-bee3979d891e-{i}", $"Task{i}", "Not,Available", "Closed", "Task", "Completed", DateTime.Now, DateTime.Now, DateTime.Now, 0, 8, 5, "bc21e385-8c16-4542-8942-bee3979d891e");
                 list.Add(t);
             }
 
@@ -48,7 +48,7 @@
             //Projekt 2-2 - 72eff1bf-822b-454b-b8fb-35feef8f67f1
             for (int i = 1; i <= 5; i++)
             {
-                var t = new DevOpsWorkItem($"72eff1bf-822b-454b-b8fb-35feef8f67f1-{i}", $"Task{i}", "Not,Available", "Closed", "Task", "Completed", DateTime.Now, DateTime.Now, DateTime.Now, 0, 3, 5, "72eff1bf-822b-454b-b8fb-35feef8f67f1");
+                var t = new DevOpsWorkItem($"72eff1bf-822b-454b-b8fb-35feef8f67f1-{i}", $"Task{i}", "Not,Available", "Closed", "Task", "Completed", DateTime.Now, DateTime.Now, DateTime.Now, 0, 10, 5, "72eff1bf-822b-454b-b8fb-35feef8f67f1");
                 list.Add(t);
             }
             //Projekt 2-3 - 34fef5f4-26b5-4f54-9ec4-ecf89d023a9d
