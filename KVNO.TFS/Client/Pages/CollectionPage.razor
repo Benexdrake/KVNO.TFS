@@ -8,7 +8,7 @@
 
 @if (Projects is not null && WorkItemsDetails is not null)
 {
-    <CollectionSearchComponent></CollectionSearchComponent>
+    <CollectionSearchComponent Projects="@Projects.ToList()"></CollectionSearchComponent>
 
     <table class="table table-striped">
         <thead>
