@@ -38,4 +38,15 @@ public class WorkItemService : IWorkItemService
         return detail;
     }
 
+    public async Task<int> GetWorkItemsCount()
+    {
+        var count = await _http.GetFromJsonAsync<int>($"api/workitem/count");
+        return count;
+    }
+    public async Task<List<int>> GetWorkItemsYears()
+    {
+        var years = await _http.GetFromJsonAsync<List<int>>($"api/workitem/years");
+        return years;
+    }
+
 }

@@ -76,4 +76,22 @@ public class WorkItemController : ControllerBase
         }
         return BadRequest();
     }
+
+    [HttpGet("count")]
+    public async Task<ActionResult> GetWorkItemsCount()
+    {
+        return Ok(_context.WorkItems.ToList().Count);
+    }
+
+    [HttpGet("years")]
+    public async Task<ActionResult> GetWorkItemsYears()
+    {
+        List<int> years = new();
+        foreach (var item in _context.WorkItems)
+        {
+            years.Add(item.Created.Year);
+        }
+
+        return Ok(years);
+    }
 }

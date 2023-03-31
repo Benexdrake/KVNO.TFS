@@ -10,7 +10,18 @@
 
 @if(loaded)
 {
-    <p>Collection Name | Projekt Name | Workitem Title | Workitem Est Time | Workitem Created at | WorkItem Assigned User | Button Open Workitem</p>
+    <div class="container">
+    <div class="row">
+        <InformationDonut Information="Information"></InformationDonut>
+        <WorkItemDonut Workitems="WorkItemsYears"></WorkItemDonut>
+
+     </div>
+     </div>
+
+
+    <ProjectLineChart Projects="Projects"></ProjectLineChart>
+    <WorkItemLineChart Workitems="WorkItems"></WorkItemLineChart>
+
 
     <RadzenDataGrid Data="@WorkItems" TItem="DevOpsWorkItem" AllowFiltering="true" AllowColumnResize="true"
                 AllowSorting="true" PageSize="20" AllowPaging="true" ShowPagingSummary="true">
@@ -59,13 +70,13 @@ else
     <h1>Loading</h1>
 }
 
-
-
 @code
 {
     public List<DevOpsCollection> Collections { get; set; } = new();
     public List<DevOpsProject> Projects { get; set; } = new();
     public List<DevOpsWorkItem> WorkItems { get; set; } = new();
+    public List<int> Information { get; set; } = new();
+    public List<int> WorkItemsYears { get; set; }
 
     private bool loaded = false;
 
@@ -94,6 +105,10 @@ else
             {
                 WorkItems.AddRange(w);
             }
+            Information.Add(Collections.Count);
+            Information.Add(Projects.Count);
+            Information.Add(await ws.GetWorkItemsCount());
+            WorkItemsYears = await ws.GetWorkItemsYears();
             loaded = true;
         }
     }

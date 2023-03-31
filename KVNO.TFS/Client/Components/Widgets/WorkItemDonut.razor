@@ -1,0 +1,65 @@
+﻿@using KVNO.TFS.Client.Models;
+
+@if (datas.Count > 0)
+{
+    <div class="col-sm-12 col-lg-6 offset-lg-3 my-5">
+        <RadzenCard class="w-100 mb-4">
+            <RadzenCheckBox @bind-Value="@showDataLabels" Name="dataLabels"></RadzenCheckBox>
+            <RadzenLabel Text="Show Data Labels" For="dataLabels" Style="margin-left: 8px; vertical-align: middle;" />
+        </RadzenCard>
+        <RadzenChart>
+            <RadzenDonutSeries Data="datas" CategoryProperty="Quarter" ValueProperty="Revenue">
+                <ChildContent>
+                    <RadzenSeriesDataLabels Visible="@showDataLabels" />
+                </ChildContent>
+                <TitleTemplate>
+                    <div class="rz-donut-content">
+                        <div>Revenue</div>
+                        <div>for 2020</div>
+                    </div>
+                </TitleTemplate>
+            </RadzenDonutSeries>
+        </RadzenChart>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public List<int> Workitems { get; set; }
+
+    Dictionary<int, int> jahreZaehlung = new Dictionary<int, int>();
+
+    List<DataItem> datas = new();
+
+    bool showDataLabels = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        List<int> years = new();
+
+        foreach (var w in Workitems)
+        {
+            years.Add(w);
+        }
+
+
+        foreach (int jahr in years)
+        {
+            if (jahreZaehlung.ContainsKey(jahr))
+            {
+                jahreZaehlung[jahr]++;
+            }
+            else
+            {
+                jahreZaehlung[jahr] = 1;
+            }
+        }
+
+        foreach (var item in jahreZaehlung)
+        {
+            datas.Add(new DataItem() { Quarter = item.Key.ToString(), Revenue = item.Value });
+        }
+
+    }
+}
