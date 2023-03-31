@@ -12,7 +12,7 @@
 
             for (int i = 1; i <= 5; i++)
             {
-                var t = new DevOpsWorkItem($"5e66c86e-07e1-4400-a352-499b4031c5c4-{i}", $"Task{i}", users[i-1],"Closed","Task","Completed", DateTime.Now, DateTime.Now, DateTime.Now, 0,5,5, "5e66c86e-07e1-4400-a352-499b4031c5c4");
+                var t = new DevOpsWorkItem($"5e66c86e-07e1-4400-a352-499b4031c5c4-{i}", $"Task{i}", users[i-1],"New","Task","Completed", DateTime.Now, DateTime.Now, DateTime.Now, 0,5,5, "5e66c86e-07e1-4400-a352-499b4031c5c4");
                 list.Add(t);
             }
 

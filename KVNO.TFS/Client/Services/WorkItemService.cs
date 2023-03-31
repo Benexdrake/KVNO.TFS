@@ -32,4 +32,10 @@ public class WorkItemService : IWorkItemService
         return detail;
     }
 
+    public async Task<DevOpsWorkItem[]?> GetWorkItemsByState(string state)
+    {
+        var detail = await _http.GetFromJsonAsync<DevOpsWorkItem[]>($"api/workitem/state?state={state}");
+        return detail;
+    }
+
 }

@@ -1,4 +1,7 @@
-﻿namespace KVNO.TFS.Server.Controllers;
+﻿using KVNO.TFS.Client.Pages;
+using KVNO.TFS.Server.TFSModels.WorkItemsID;
+
+namespace KVNO.TFS.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -49,6 +52,15 @@ public class WorkItemController : ControllerBase
         var workitem = _context.WorkItems.Where(x => x.ProjectId.Equals(projectId));
         if (workitem is not null)
             return Ok(workitem);
+        return BadRequest();
+    }
+
+    [HttpGet("state")]
+    public async Task<ActionResult> GetByStatus(string state)
+    {
+        var workitems = _context.WorkItems.Where(x => x.State.Equals(state)).ToList();
+        if(workitems is not null)
+            return Ok(workitems);
         return BadRequest();
     }
 

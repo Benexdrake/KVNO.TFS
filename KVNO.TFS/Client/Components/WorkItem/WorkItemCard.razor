@@ -1,0 +1,49 @@
+﻿<RadzenCard Class="rz-my-12 rz-mx-auto">
+    <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.SpaceBetween" Gap="1rem" Class="rz-p-4">
+        <RadzenStack Gap="0">
+            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Title</RadzenText>
+            <RadzenText TextStyle="TextStyle.Body1"><b>@WorkItem.Title</b></RadzenText>
+        </RadzenStack>
+        <RadzenStack Gap="10">
+            <RadzenText TextStyle="TextStyle.Overline" class="rz-display-flex rz-mt-2 rz-my-0">Assigned User</RadzenText>
+            <RadzenText TextStyle="TextStyle.Body1"><b>@WorkItem.AssignetUser</b></RadzenText>
+        </RadzenStack>
+    </RadzenStack>
+    <RadzenCard class=@Check(WorkItem.EstimateTime, WorkItem.CompletedTime) style="margin: 1rem calc(-1 * var(--rz-card-padding));">
+        <RadzenRow RowGap="0">
+            <RadzenColumn SizeSM="4">
+                <RadzenText TextStyle="TextStyle.Overline" class="rz-color-white rz-display-flex rz-mt-4 rz-mb-0">Estimate Time</RadzenText>
+                <RadzenText TextStyle="TextStyle.Body1"><b style="color:white">@WorkItem.EstimateTime</b></RadzenText>
+                <RadzenText TextStyle="TextStyle.Overline" class="rz-color-white rz-display-flex rz-mt-4 rz-mb-0">Remaining Time</RadzenText>
+                <RadzenText TextStyle="TextStyle.Body1"><b style="color:white">@WorkItem.RemainingTime</b></RadzenText>
+                <RadzenText TextStyle="TextStyle.Overline" class="rz-color-white rz-display-flex rz-mt-4 rz-mb-0">Complete Time</RadzenText>
+                <RadzenText TextStyle="TextStyle.Body1"><b style="color:white">@WorkItem.CompletedTime</b></RadzenText>
+            </RadzenColumn>
+            <RadzenColumn SizeSM="4">
+                <RadzenText TextStyle="TextStyle.Overline" class="rz-color-white rz-display-flex rz-mt-4 rz-mb-0">Created</RadzenText>
+                <RadzenText TextStyle="TextStyle.Body1"><b style="color:white">@WorkItem.Created</b></RadzenText>
+                <RadzenText TextStyle="TextStyle.Overline" class="rz-color-white rz-display-flex rz-mt-4 rz-mb-0">Last Change</RadzenText>
+                <RadzenText TextStyle="TextStyle.Body1"><b style="color:white">@WorkItem.LastChange</b></RadzenText>
+            </RadzenColumn>
+            <RadzenColumn SizeSM="4">
+                <RadzenText TextStyle="TextStyle.Overline" class="rz-color-white rz-display-flex rz-mt-4 rz-mb-0">State</RadzenText>
+                <RadzenText TextStyle="TextStyle.Body1"><b style="color:white">@WorkItem.State</b></RadzenText>
+                <RadzenText TextStyle="TextStyle.Overline" class="rz-color-white rz-display-flex rz-mt-4 rz-mb-0">Type</RadzenText>
+                <RadzenText TextStyle="TextStyle.Body1"><b style="color:white">@WorkItem.Type</b></RadzenText>
+            </RadzenColumn>
+        </RadzenRow>
+    </RadzenCard>
+</RadzenCard>
+
+
+@code{
+    [Parameter]
+    public DevOpsWorkItem WorkItem { get; set; }
+
+    string Check(float estimate, float complete)
+    {
+        if (estimate >= complete)
+                return "rz-background-color-success-darker rz-shadow-0 rz-border-radius-0 rz-p-8";
+        return "rz-background-color-danger rz-shadow-0 rz-border-radius-0 rz-p-8";
+    }
+}

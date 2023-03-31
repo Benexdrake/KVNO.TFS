@@ -1,67 +1,119 @@
 ﻿@page "/"
-@using KVNO.TFS.Client.Services;
-@using KVNO.TFS.Shared.Models;
+
 @inject ICollectionService cs;
 @inject IProjectService ps;
 @inject IWorkItemService ws;
+
+@inject DialogService DialogService;
 
 <PageTitle>Index</PageTitle>
 
 @if(loaded)
 {
-    <h1>Welcome at the super cool and crazy working awsome not much making App</h1>
-    
-    <p>The TFS has:<br />
-        Collections: @Collections.Length<br>
-        Projects: @Projects.Length<br>
-        WorkItems: @workitemsCount<br>
-    </p>
+    <p>Collection Name | Projekt Name | Workitem Title | Workitem Est Time | Workitem Created at | WorkItem Assigned User | Button Open Workitem</p>
+
+    <RadzenDataGrid Data="@WorkItems" TItem="DevOpsWorkItem" AllowFiltering="true" AllowColumnResize="true"
+                AllowSorting="true" PageSize="20" AllowPaging="true" ShowPagingSummary="true">
+        <Columns>
+            <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Collection Name">
+                <Template Context="wi">
+                    @GetCollectionName(wi.ProjectId);
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Project Name">
+                <Template Context="wi">
+                    @GetProjectName(wi.ProjectId);
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Title">
+                <Template Context="wi">
+                    @wi.Title
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Estimated Time" Width="200px">
+                <Template Context="wi">
+                    @wi.EstimateTime
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Created at" Width="200px">
+                <Template Context="wi">
+                    @wi.Created
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Assigned User" Width="200px">
+                <Template Context="wi">
+                    @wi.AssignetUser
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Action" Width="120px">
+                <Template Context="workItem">
+                    <RadzenButton Text="Open" Click="args => Open(workItem)" ButtonStyle="ButtonStyle.Danger"></RadzenButton>
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+
+}
+else
+{
+    <h1>Loading</h1>
 }
 
 
 
 @code
 {
-    bool loaded = false;
-    public DevOpsCollection[] Collections { get; set; }
-    public DevOpsProject[] Projects { get; set; }
-    public WorkItemsDetails[] WorkItemsDetails { get; set; }
-    int workitemsCount = 0;
+    public List<DevOpsCollection> Collections { get; set; } = new();
+    public List<DevOpsProject> Projects { get; set; } = new();
+    public List<DevOpsWorkItem> WorkItems { get; set; } = new();
+
+    private bool loaded = false;
 
     protected override async Task OnInitializedAsync()
     {
-        var collections = await cs.GetCollections();
-        if(collections is not null)
+        await GetAll();
+    }
+
+    public async Task GetAll()
+    {
+
+        var cols = await cs.GetCollections();
+        if(cols is not null)
         {
-            var projectList = new List<DevOpsProject>();
-            var detailslist = new List<WorkItemsDetails>();
-            foreach (var col in collections)
+            Collections.AddRange(cols);
+            foreach (var col in Collections)
             {
                 var projects = await ps.GetProjects(col.Name, col.Id);
                 if(projects is not null)
                 {
-                    if(projects is not null)
-                        projectList.AddRange(projects);
+                    Projects.AddRange(projects);
                 }
             }
-            Console.WriteLine(projectList.Count);
-            foreach (var pj in projectList)
+            var w = await ws.GetWorkItemsByState("New");
+            if(w is not null)
             {
-                var details = await ws.GetWorkItemDetails(pj.Id);
-                if (details is not null)
-                    detailslist.Add(details);
+                WorkItems.AddRange(w);
             }
-            Collections = collections;
-            Projects = projectList.ToArray();
-            WorkItemsDetails = detailslist.ToArray();
-
-            foreach (var detail in WorkItemsDetails)
-            {
-                workitemsCount += detail.Count;
-            }
+            loaded = true;
         }
-       
+    }
 
-        loaded = true;
+    string GetCollectionName(string projectId)
+    {
+        var project = Projects.FirstOrDefault(x => x.Id.Equals(projectId));
+        var collection = Collections.FirstOrDefault(x => x.Id.Equals(project.CollectionId));
+        return collection.Name;
+    }
+
+    string GetProjectName(string projectId)
+    {
+        var project = Projects.FirstOrDefault(x => x.Id.Equals(projectId));
+        return project.Name;
+    }
+
+    async Task Open(DevOpsWorkItem workitem)
+    {
+        Console.WriteLine("Test");
+        await DialogService.OpenAsync("Simple Dialog", x =>@<WorkItemCard WorkItem="workitem"></WorkItemCard>, new DialogOptions() { Width = "700px", Height = "512px", Resizable = true, Draggable = true });
     }
 }

@@ -7,4 +7,6 @@ builder.Services.AddScoped<ICollectionService, CollectionService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 builder.Services.AddScoped<IWorkItemService, WorkItemService>();
 
+builder.Services.AddScoped<DialogService>();
+
 await builder.Build().RunAsync();

@@ -176,6 +176,7 @@ public class WorkItemLogic : IWorkItemLogic
                 wDb.ProjectId = w.ProjectId;
                 wDb.AssignetUser = w.AssignetUser;
                 wDb.Title = w.Title;
+                wDb.State = w.State;
                 await _context.SaveChangesAsync();
             }
         }

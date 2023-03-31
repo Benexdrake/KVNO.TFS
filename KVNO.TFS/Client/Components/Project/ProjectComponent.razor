@@ -1,0 +1,47 @@
+﻿@inject DialogService DialogService
+
+<RadzenDataGrid Data="@WorkItems" TItem="DevOpsWorkItem" AllowFiltering="true" AllowColumnResize="true"
+                AllowSorting="true" PageSize="20" AllowPaging="true" ShowPagingSummary="true">
+    <Columns>
+        <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="" Width="80px">
+            <Template Context="data">
+                <RadzenImage Path="@Check(data.EstimateTime,data.CompletedTime)" class="rz-gravatar"/>
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Title" Property="Title"></RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Assigned User" Property="AssignetUser"></RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="State" Property="State" Width="120px"></RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Type" Property="Type" Width="120px"></RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Estimated Time" Property="EstimateTime" Width="200px"></RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Remaining Time" Property="RemainingTime" Width="200px"></RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Completed Time" Property="CompletedTime" Width="200px"></RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Created at" Property="Created" Width="200px"></RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Last Change" Property="LastChange" Width="200px"></RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Action" Width="120px">
+            <Template Context="workItem">
+                <RadzenButton Text="Open" Click="args => Open(workItem)" ButtonStyle="ButtonStyle.Danger"></RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>    
+</RadzenDataGrid>
+
+
+@code
+{
+    [Parameter]
+    public DevOpsWorkItem[] WorkItems { get; set; }
+
+
+    async Task Open(DevOpsWorkItem workitem)
+    {
+        Console.WriteLine("Test");
+        await DialogService.OpenAsync("Simple Dialog", x =>@<WorkItemCard WorkItem="workitem"></WorkItemCard>, new DialogOptions() { Width = "700px", Height = "512px", Resizable = true, Draggable = true });
+    }
+
+    string Check(float estimate, float complete)
+    {
+        if (complete > estimate)
+            return "bad.png";
+        return "ok.png";
+    }
+}

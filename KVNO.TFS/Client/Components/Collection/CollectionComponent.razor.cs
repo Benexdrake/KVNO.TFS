@@ -12,5 +12,11 @@ namespace KVNO.TFS.Client.Components.Collection
             Console.WriteLine(projectId);
             NM.NavigateTo($"project/{projectId}");
         }
+        string Check(float estimate, float complete)
+        {
+            if (complete > estimate)
+                return "bad.png";
+            return "ok.png";
+        }
     }
 }
