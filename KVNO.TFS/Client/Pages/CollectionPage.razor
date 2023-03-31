@@ -6,53 +6,9 @@
     <h3>@CollectionName</h3>
 }
 
-@if (Projects is not null && WorkItemsDetails is not null)
+@if (ProjectWithDetails is not null)
 {
-    <CollectionSearchComponent Projects="@Projects.ToList()"></CollectionSearchComponent>
-
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Estimate Time</th>
-                <th scope="col">Remaining Time</th>
-                <th scope="col">Complete Time</th>
-                <th scope="col">Work Item Count</th>
-                <th scope="col">Last Updated Time</th>
-                <th scope="col">Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (int i = 0; i < Projects.Length; i++)
-            {
-                string Id = Projects[i].Id;
-                if(WorkItemsDetails[i].CompletedTime > WorkItemsDetails[i].EstimatedTime)
-                {
-                    <tr style="background-color: red; color:aliceblue">
-                        <td>@Projects[i].Name</td>
-                        <td>@WorkItemsDetails[i].EstimatedTime</td>
-                        <td>@WorkItemsDetails[i].RemainingTime</td>
-                        <td>@WorkItemsDetails[i].CompletedTime</td>
-                        <td>@WorkItemsDetails[i].Count</td>
-                        <td>@Projects[i].LastUpdateTime</td>
-                        <td><button class="btn btn-primary" @onclick="() =>OpenProject(Id)">Open</button></td>
-                    </tr>
-                }
-                else
-                {
-                    <tr>
-                    <td>@Projects[i].Name</td>
-                    <td>@WorkItemsDetails[i].EstimatedTime</td>
-                    <td>@WorkItemsDetails[i].RemainingTime</td>
-                    <td>@WorkItemsDetails[i].CompletedTime</td>
-                    <td>@WorkItemsDetails[i].Count</td>
-                    <td>@Projects[i].LastUpdateTime</td>
-                    <td><button class="btn btn-primary" @onclick="() =>OpenProject(Id)">Open</button></td>
-                </tr>
-                }
-            }
-        </tbody>
-    </table>
+    <CollectionComponent ProjectsWithDetails="@ProjectWithDetails"></CollectionComponent>
 }
 else
 {

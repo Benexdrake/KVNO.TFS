@@ -8,15 +8,12 @@ public partial class CollectionPage
     public IProjectService ps { get; set; }
     [Inject]
     public IWorkItemService ws { get; set; }
-    [Inject]
-    public NavigationManager NavigationManager { get; set; }
 
 
     [Parameter]
     public string Id { get; set; } = string.Empty;
     public string CollectionName { get; set; }
-    public DevOpsProject[] Projects { get; set; } = null;
-    public WorkItemsDetails[] WorkItemsDetails { get; set; }
+    public ProjectWithDetails[] ProjectWithDetails { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -28,24 +25,16 @@ public partial class CollectionPage
         var collection = await cs.GetCollections();
         if (collection is not null)
         {
+            List<ProjectWithDetails> projectWithDetails = new List<ProjectWithDetails>();
             CollectionName = collection.FirstOrDefault(x => x.Id.Equals(Id)).Name;
             var projects = await ps.GetProjects(CollectionName, Id);
-            if (projects is not null)
+            foreach (var p in projects)
             {
-                List<WorkItemsDetails> details = new();
-                foreach (var project in projects)
-                {
-                    var detail = await ws.GetWorkItemDetails(project.Id);
-                    details.Add(detail);
-                }
-                WorkItemsDetails = details.ToArray();
-                Projects = projects;
+                var w = await ws.GetWorkItemDetails(p.Id);
+                if (w is not null)
+                    projectWithDetails.Add(new(p, w));
             }
+            ProjectWithDetails = projectWithDetails.ToArray();
         }
-    }
-
-    public void OpenProject(string projectId)
-    {
-        NavigationManager.NavigateTo($"project/{projectId}");
     }
 }

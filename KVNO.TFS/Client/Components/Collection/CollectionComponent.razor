@@ -1,0 +1,37 @@
+﻿<RadzenDataGrid Data="@ProjectsWithDetails" TItem="ProjectWithDetails" AllowFiltering="true" AllowColumnResize="true"
+                AllowSorting="true" PageSize="20" AllowPaging="true" ShowPagingSummary="true">
+<Columns>
+    <RadzenDataGridColumn TItem="ProjectWithDetails" Title="Name">
+        <Template Context="data">
+            @data.Project.Name
+        </Template>
+    </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ProjectWithDetails" Title="Estimated Time">
+            <Template Context="data">
+                @data.WorkItemsDetails.EstimatedTime
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ProjectWithDetails" Title="Remaining Time">
+            <Template Context="data">
+                @data.WorkItemsDetails.RemainingTime
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ProjectWithDetails" Title="Completed Time">
+            <Template Context="data">
+                @data.WorkItemsDetails.CompletedTime
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ProjectWithDetails" Title="Count">
+            <Template Context="data">
+                @data.WorkItemsDetails.Count
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="ProjectWithDetails" Title="Action">
+            <Template Context="data">
+                <RadzenButton Text="Open" Click="@(args => Open(data.Project.Id))"></RadzenButton>
+            </Template>
+        </RadzenDataGridColumn>
+</Columns>
+</RadzenDataGrid>
+
+
