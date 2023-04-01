@@ -12,28 +12,26 @@
 {
     <div class="container">
     <div class="row">
+        <div class="col-sm-12 col-lg-3">
         <InformationDonut Information="Information"></InformationDonut>
+        </div>
+        <div class="col-sm-12 col-lg-3">
         <WorkItemDonut Workitems="WorkItemsYears"></WorkItemDonut>
-
+        </div>
      </div>
      </div>
-
-
-    <ProjectLineChart Projects="Projects"></ProjectLineChart>
-    <WorkItemLineChart Workitems="WorkItems"></WorkItemLineChart>
-
 
     <RadzenDataGrid Data="@WorkItems" TItem="DevOpsWorkItem" AllowFiltering="true" AllowColumnResize="true"
-                AllowSorting="true" PageSize="20" AllowPaging="true" ShowPagingSummary="true">
+                    AllowSorting="true" PageSize="20" AllowPaging="true" ShowPagingSummary="true">
         <Columns>
             <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Collection Name">
                 <Template Context="wi">
-                    @GetCollectionName(wi.ProjectId);
+                    @GetCollectionName(wi.ProjectId)
                 </Template>
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Project Name">
                 <Template Context="wi">
-                    @GetProjectName(wi.ProjectId);
+                    @GetProjectName(wi.ProjectId)
                 </Template>
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="DevOpsWorkItem" Title="Title">
@@ -63,7 +61,6 @@
             </RadzenDataGridColumn>
         </Columns>
     </RadzenDataGrid>
-
 }
 else
 {

@@ -1,29 +1,26 @@
 ﻿@using KVNO.TFS.Client.Models;
-<h3>ProjectDonut</h3>
 
 @if(datas.Count >0)
 {
-    <div class="col-sm-12 col-lg-6 offset-lg-3 my-5">
-        <RadzenCard class="w-100 mb-4">
-            <RadzenCheckBox @bind-Value="@showDataLabels" Name="dataLabels"></RadzenCheckBox>
-            <RadzenLabel Text="Show Data Labels" For="dataLabels" Style="margin-left: 8px; vertical-align: middle;" />
-        </RadzenCard>
-        <RadzenChart>
-            <RadzenDonutSeries Data="datas" CategoryProperty="Quarter" ValueProperty="Revenue">
-                <ChildContent>
-                    <RadzenSeriesDataLabels Visible="@showDataLabels" />
-                </ChildContent>
-                <TitleTemplate>
-                    <div class="rz-donut-content">
-                        <div>Collections</div>
-                        <div>Projects</div>
-                        <div>and</div>
-                        <div>Work Items</div>
-                    </div>
-                </TitleTemplate>
-            </RadzenDonutSeries>
-        </RadzenChart>
-    </div>
+    <RadzenCard class="w-100 mb-4">
+        <RadzenCheckBox @bind-Value="@showDataLabels" Name="dataLabels"></RadzenCheckBox>
+        <RadzenLabel Text="Show Data Labels" For="dataLabels" Style="margin-left: 8px; vertical-align: middle;" />
+    </RadzenCard>
+    <RadzenChart>
+        <RadzenDonutSeries Data="datas" CategoryProperty="Quarter" ValueProperty="Revenue">
+            <ChildContent>
+                <RadzenSeriesDataLabels Visible="@showDataLabels" />
+            </ChildContent>
+            <TitleTemplate>
+                <div class="rz-donut-content">
+                    <div>Collections</div>
+                    <div>Projects</div>
+                    <div>and</div>
+                    <div>Work Items</div>
+                </div>
+            </TitleTemplate>
+        </RadzenDonutSeries>
+    </RadzenChart>
 }
 
 
